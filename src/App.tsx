@@ -1,35 +1,43 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from "react";
+import "./App.css";
+import apiClient from "./api/client";
 
+interface RandomData {
+  some: string;
+  something_else: string;
+}
 function App() {
-  const [count, setCount] = useState(0)
+  const [randomData, setRandomData] = useState<RandomData | null>(null);
+
+  const getData = () => {
+    apiClient
+      .get("/data")
+      .then((r) => {
+        const response = r.data;
+        console.log(response);
+
+        setRandomData({
+          some: response.some,
+          something_else: response.more,
+        });
+      })
+      .catch((e) => {
+        console.log(e);
+      });
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <p>To see some random info:</p>
+      <button onClick={getData}>Click Me!</button>
+      {randomData && (
+        <div>
+          <p>some: {randomData.some}</p>
+          <p>more: {randomData.something_else}</p>
+        </div>
+      )}
     </>
-  )
+  );
 }
 
-export default App
+export default App;
